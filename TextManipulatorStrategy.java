@@ -1,0 +1,56 @@
+package ca.utoronto.utm.paint;
+
+import java.awt.event.MouseEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+/**
+ * TextManipulatorStrategy extends ShapeManipulatorStrategy and takes care of
+ * what happens to the shape and panel when the user modifies the mouse position or status.
+ *
+ */
+public class TextManipulatorStrategy extends ShapeManipulatorStrategy {
+	
+	private Text text;
+	private int x1,y1;
+	final JFrame frame = new JFrame();
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// Starting point for the rectangle
+		x1 = e.getX();
+		y1 = e.getY();
+		Point starting = new Point(x1, y1);
+		// creating the new rectangle 
+		this.text = new Text(starting, 0, 0);
+		panel.getPaintModel().addDrawingCommand(new DrawTextCommand(this.text, panel.getPaintModel().getLastColor(), panel.getView().getSlider().getValue()));
+	}
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// old and new mouse click coordinates
+		int x2 = e.getX();
+		int y2 = e.getY();
+
+		// width and height compoenents of rectangle
+		int width = (int) (Math.abs(x2 - x1));
+		int height = (int) (Math.abs(y2 - y1));
+		
+		this.text.setWidth(width);
+		this.text.setHeight(height);
+		
+		// minimum statring points
+		int minx = Math.min(x1, x2);
+		int miny = Math.min(y1, y2);
+		this.text.setStart(new Point(minx, miny));
+		// adding to the model so that the you can see the rectangle
+		panel.repaint();
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {	
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		new TextSetView(this.text, this.panel);
+	}
+
+}
